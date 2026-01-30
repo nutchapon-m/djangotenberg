@@ -111,3 +111,6 @@ Once installed and included (assuming mapped to `/api/`), you can access the API
 *   `POST /api/pdf-engine/merge/`: Merge multiple PDF files
 *   `POST /api/pdf-engine/read-metadata/`: Read PDF Metadata
 *   `POST /api/pdf-engine/write-metadata/`: Write PDF Metadata
+
+## License
+This project is licensed under the terms of the MIT lincense.
