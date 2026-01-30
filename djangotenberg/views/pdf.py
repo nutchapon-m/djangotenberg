@@ -5,14 +5,17 @@ from rest_framework.decorators import action
 
 from djangotenberg.retry import retry
 from djangotenberg.client import APIClient
-
-client = APIClient()
+from djangotenberg.views.base import BaseAPIView
 
 class PDFView(BaseAPIView):
+    """
+    API View สำหรับจัดการไฟล์ PDF
+    """
+    client = APIClient()
 
     def healthly(self):
         try:
-            resp = retry(client.health, delay=1, retries=3)
+            resp = retry(self.client.health, delay=1, retries=3)
         except Exception as e:
             return Response(
                 {"error": "Gotenberg service is not available", "detail": str(e)},
@@ -37,7 +40,7 @@ class PDFView(BaseAPIView):
         if not self.healthly():
             return self.healthly()
         
-        resp = client.html_to_pdf(html_string)
+        resp = self.client.html_to_pdf(html_string)
         if not resp.ok:
             return Response(
                 {"error": "Failed to convert HTML to PDF", "detail": resp.text},
@@ -69,7 +72,7 @@ class PDFView(BaseAPIView):
         if not self.healthly():
             return self.healthly()
         
-        resp = client.read_pdf_metadata(pdf_files)
+        resp = self.client.read_pdf_metadata(pdf_files)
         if not resp.ok:
             return Response(
                 {"error": "Failed to read PDF metadata", "detail": resp.text},
@@ -108,7 +111,7 @@ class PDFView(BaseAPIView):
         if not self.healthly():
             return self.healthly()
         
-        resp = client.write_pdf_metadata(pdf_files, metadata)
+        resp = self.client.write_pdf_metadata(pdf_files, metadata)
         if not resp.ok:
             return Response(
                 {"error": "Failed to write PDF metadata", "detail": resp.text},
@@ -147,7 +150,7 @@ class PDFView(BaseAPIView):
         if not self.healthly():
             return self.healthly()
         
-        resp = client.merge_pdf(pdf_files, metadata)
+        resp = self.client.merge_pdf(pdf_files, metadata)
         if not resp.ok:
             return Response(
                 {"error": "Failed to merge PDF", "detail": resp.text},
