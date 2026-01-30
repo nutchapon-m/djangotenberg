@@ -1,16 +1,16 @@
 # Djangotenberg
 
-Djangotenberg คือ Library สำหรับเชื่อมต่อและใช้งาน Gotenberg PDF generator ภายในโปรเจค Django ช่วยให้สามารถแปลง HTML เป็น PDF และจัดการไฟล์ PDF ได้อย่างง่ายดาย
+Djangotenberg is a library for connecting and using the Gotenberg PDF generator within your modern Django project. It allows you to convert HTML to PDF and manage PDF files easily.
 
 ## Supported Tools
 
-ปัจจุบัน Djangotenberg รองรับเครื่องมือ (Tools) หลักของ Gotenberg ดังนี้:
+Currently, Djangotenberg supports the following Gotenberg tools:
 
-*   **Chromium**: สำหรับแปลง HTML code ให้เป็นไฟล์ PDF
-*   **PDF Engines**: สำหรับจัดการไฟล์ PDF
-    *   Merge PDFs: รวมไฟล์ PDF หลายไฟล์เข้าด้วยกัน
-    *   Read Metadata: อ่านค่า Metadata ของไฟล์ PDF
-    *   Write Metadata: แก้ไขหรือเพิ่ม Metadata ให้กับไฟล์ PDF
+*   **Chromium**: For converting HTML code to PDF files.
+*   **PDF Engines**: For manipulating PDF files.
+    *   Merge PDFs: Combine multiple PDF files.
+    *   Read Metadata: Read metadata from PDF files.
+    *   Write Metadata: Edit or add metadata to PDF files.
 
 ## Requirements
 
@@ -18,18 +18,18 @@ Djangotenberg คือ Library สำหรับเชื่อมต่อแ
 *   Django >= 4.2
 *   djangorestframework >= 3.16
 *   requests >= 2.32
-*   **Gotenberg Server**: จำเป็นต้องมี Gotenberg server รันอยู่ (แนะนำให้รันผ่าน Docker)
+*   **Gotenberg Server**: A running Gotenberg server is required (running via Docker is recommended).
 
 ## Installation
 
-ติดตั้ง Library ผ่าน pip:
-(สมมติว่า package ชื่อ `djangotenberg`)
+Install the library via pip:
+(Assuming the package is named `djangotenberg`)
 
 ```bash
 pip install djangotenberg
 ```
 
-หรือติดตั้งจาก Source code:
+Or install from Source code:
 
 ```bash
 pip install .
@@ -37,7 +37,7 @@ pip install .
 
 ## Setup & Configuration
 
-1.  เพิ่ม `djangotenberg` เข้าไปใน `INSTALLED_APPS` ในไฟล์ `settings.py` ของคุณ:
+1.  Add `djangotenberg` to `INSTALLED_APPS` in your `settings.py`:
 
     ```python
     # settings.py
@@ -50,25 +50,25 @@ pip install .
     ]
     ```
 
-2.  กำหนดค่า `GOTENBERG_CONFIG` ใน `settings.py` เพื่อระบุตำแหน่งของ Gotenberg server:
+2.  Define `GOTENBERG_CONFIG` in `settings.py` to specify the Gotenberg server location:
 
     ```python
     # settings.py
 
     GOTENBERG_CONFIG = {
-        # URL ของ Gotenberg server ที่คุณรันอยู่ (Required)
+        # Gotenberg server URL (Required)
         "GOTENBERG_URL": "http://localhost:3000",
         
-        # เวลา Time out สำหรับเรียก API หน่วยเป็นวินาที (Optional, Default: 10)
+        # API timeout in seconds (Optional, Default: 10)
         "GOTENBERG_API_TIMEOUT": 10,
     }
     ```
 
 ## Usage
 
-### 1. ใช้งานผ่าน Client (Python Code)
+### 1. Using Client (Python Code)
 
-คุณสามารถเรียกใช้ `APIClient` เพื่อส่งคำสั่งไปยัง Gotenberg โดยตรง
+You can use `APIClient` to send commands directly to Gotenberg.
 
 ```python
 from djangotenberg.client import APIClient
@@ -84,32 +84,30 @@ if response.ok:
         f.write(response.content)
 ```
 
-### 2. ใช้งานผ่าน Django Views (REST Framework)
+### 2. Using Django Views (REST Framework)
 
-Djangotenberg เตรียม `PDFView` มาให้ ซึ่งคุณสามารถนำไป register กับ Router ของ DRF ได้ทันที
+Djangotenberg provides a pre-configured URL configuration that you can include directly in your project's `urls.py`.
+
+> **Note:** `PDFView` has `permission_classes = [IsAuthenticated]` set by default. Therefore, calling the API requires a Token or Login.
 
 **urls.py**
 
 ```python
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
-from djangotenberg.views.pdf import PDFView
-
-router = DefaultRouter()
-# Register endpoint สำหรับ PDF
-router.register(r'pdf', PDFView, basename='pdf')
 
 urlpatterns = [
-    path('api/', include(router.urls)),
+    # ...
+    path('api/', include('djangotenberg.urls')),
+    # ...
 ]
 ```
 
 **Available Endpoints:**
 
-เมื่อติดตั้งแล้ว คุณจะสามารถเรียกใช้ API ได้ดังนี้ (สมมติ base url คือ `/api/pdf/`):
+Once installed and included (assuming mapped to `/api/`), you can access the API at the following endpoints:
 
-*   `POST /api/pdf/html-to-pdf/`: แปลง HTML string เป็น PDF
+*   `POST /api/pdf-engine/html-to-pdf/`: Convert HTML string to PDF
     *   Body: `{ "html": "<h1>Content</h1>" }`
-*   `POST /api/pdf/merge/`: รวมไฟล์ PDF
-*   `POST /api/pdf/read-metadata/`: อ่าน Metadata
-*   `POST /api/pdf/write-metadata/`: เขียน Metadata
+*   `POST /api/pdf-engine/merge/`: Merge multiple PDF files
+*   `POST /api/pdf-engine/read-metadata/`: Read PDF Metadata
+*   `POST /api/pdf-engine/write-metadata/`: Write PDF Metadata
