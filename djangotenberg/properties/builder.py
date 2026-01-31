@@ -24,7 +24,6 @@ class Builder:
         properties = {}
         for property in self.properties:
             properties[property["key"]] = property["value"]
-        validate_properties(properties)
         return properties
 
 
@@ -186,3 +185,34 @@ class Property(Builder):
         """
         self.add_property({"key": "nativePageRange", "value": native_page_range})
         return self
+    
+
+def build_properties(properties: dict = {}):
+    property = Property()
+    for key, value in properties.items():
+        if key == "single_page":
+            property.single_page(value)
+        elif key == "page_size":
+            property.page_size(value)
+        elif key == "margin_top":
+            property.margin_top(value)
+        elif key == "margin_bottom":
+            property.margin_bottom(value)
+        elif key == "margin_left":
+            property.margin_left(value)
+        elif key == "margin_right":
+            property.margin_right(value)
+        elif key == "prefer_css_page_size":
+            property.prefer_css_page_size(value)
+        elif key == "print_background":
+            property.print_background(value)
+        elif key == "omit_background":
+            property.omit_background(value)
+        elif key == "landscape":
+            property.landscape(value)
+        elif key == "scale":
+            property.scale(value)
+        elif key == "native_page_range":
+            property.native_page_range(value)
+    validate_properties(property.build())
+    return property.build()
