@@ -1,4 +1,5 @@
-from .properties import PageSize, Margin
+from .properties import PageSize
+from .validate import validate_properties
 
 class Builder:
     def __init__(self):
@@ -23,9 +24,23 @@ class Builder:
         properties = {}
         for property in self.properties:
             properties[property["key"]] = property["value"]
+        validate_properties(properties)
         return properties
 
+
 class Property(Builder):
+    def single_page(self, single_page: bool) -> "Property":
+        """
+            Add a single page to the builder.
+
+            Args:
+                single_page (bool): The single page to add.
+
+            Returns:
+                Property: The builder.
+        """
+        self.add_property({"key": "singlePage", "value": single_page})
+        return self
 
     def page_size(self, page_size: PageSize) -> "Property":
         """
