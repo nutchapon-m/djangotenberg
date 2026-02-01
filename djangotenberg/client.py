@@ -4,7 +4,7 @@ import requests
 
 from .conf import get_config
 from .exceptions import APIRequestError
-from .properties.builder import build_properties
+from .properties.validate import validate_properties
 
 class APIClient:
     def __init__(self):
@@ -52,7 +52,7 @@ class APIClient:
         }
 
         if properties is not None and isinstance(properties, dict):
-            properties = build_properties(properties)
+            validate_properties(properties)
         
         return self._post(path, files=files, data=properties)
     

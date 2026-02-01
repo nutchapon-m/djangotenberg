@@ -20,7 +20,6 @@ class PageSize(Enum):
 
 
 # Margin Property
-
 class Margin(Enum):
     TOP_MARGIN = 0
     BOTTOM_MARGIN = 0
