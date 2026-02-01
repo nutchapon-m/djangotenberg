@@ -72,12 +72,21 @@ You can use `APIClient` to send commands directly to Gotenberg.
 
 ```python
 from djangotenberg.client import APIClient
+from djangotenberg.properties import Property, PageSize
 
 client = APIClient()
 
 # Example: Convert HTML string to PDF
 html_content = "<h1>Hello, Djangotenberg!</h1>"
-response = client.html_to_pdf(html_content)
+
+# Optional: Configure PDF properties
+properties = Property() \
+    .single_page(True) \
+    .page_size(PageSize.A4_PAGE_SIZE) \
+    .margin_top(0.5) \
+    .build()
+
+response = client.html_to_pdf(html_content, properties=properties)
 
 if response.ok:
     with open("output.pdf", "wb") as f:
@@ -107,7 +116,17 @@ urlpatterns = [
 Once installed and included (assuming mapped to `/api/`), you can access the API at the following endpoints:
 
 *   `POST /api/pdf-engine/html-to-pdf/`: Convert HTML string to PDF
-    *   Body: `{ "html": "<h1>Content</h1>" }`
+    *   Body:
+        ```json
+        { 
+            "html": "<h1>Content</h1>",
+            "properties": {
+                "singlePage": true,
+                "paperWidth": 8.27,
+                "paperHeight": 11.69
+            }
+        }
+        ```
 *   `POST /api/pdf-engine/merge/`: Merge multiple PDF files
 *   `POST /api/pdf-engine/read-metadata/`: Read PDF Metadata
 *   `POST /api/pdf-engine/write-metadata/`: Write PDF Metadata
