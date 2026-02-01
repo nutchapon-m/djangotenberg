@@ -4,7 +4,7 @@ import requests
 
 from .conf import get_config
 from .exceptions import APIRequestError
-from .retry import retry
+from .properties.validate import validate_properties
 
 class APIClient:
     def __init__(self):
@@ -45,12 +45,16 @@ class APIClient:
         path = "/health"
         return self._get(path)
 
-    def html_to_pdf(self, html_string):
+    def html_to_pdf(self, html_string, properties: dict = None):
         path = "/forms/chromium/convert/html"
         files = {
             'files': ('index.html', html_string, 'text/html')
         }
-        return self._post(path, files=files)
+
+        if properties is not None and isinstance(properties, dict):
+            validate_properties(properties)
+        
+        return self._post(path, files=files, data=properties)
     
     def read_pdf_metadata(self, pdf_files: list[dict]):
         path = "/forms/pdfengines/metadata/read"

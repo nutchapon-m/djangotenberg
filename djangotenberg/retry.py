@@ -3,7 +3,6 @@ import time
 def retry(func, retries=3, delay=0.3):
     for i in range(retries):
         try:
-            print(f"Retry {i + 1}")
             if callable(func):
                 return func()
             return func

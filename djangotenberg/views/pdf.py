@@ -37,10 +37,12 @@ class PDFView(BaseAPIView):
                 status=status.HTTP_400_BAD_REQUEST,
             )
         
+        properties = request.data.get("properties", None)
+        
         if not self.healthly():
             return self.healthly()
         
-        resp = self.client.html_to_pdf(html_string)
+        resp = self.client.html_to_pdf(html_string, properties)
         if not resp.ok:
             return Response(
                 {"error": "Failed to convert HTML to PDF", "detail": resp.text},
